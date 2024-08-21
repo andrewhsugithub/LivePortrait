@@ -18,7 +18,7 @@ from .config.inference_config import InferenceConfig
 from .config.crop_config import CropConfig
 from .utils.cropper import Cropper
 from .utils.camera import get_rotation_matrix
-from .utils.video import images2video, concat_frames, get_fps, add_audio_to_video, has_audio_stream
+from .utils.video import images2video, concat_frames, get_fps, add_audio_to_video, has_audio_stream,is_src_vid_length_larger_drv_vid_length, loop_vid
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.io import load_image_rgb, load_video, resize_to_limit, dump, load
 from .utils.helper import mkdir, basename, dct2device, is_video, is_template, remove_suffix, is_image, is_square_video, calc_motion_multiplier
@@ -91,6 +91,10 @@ class LivePortraitPipeline(object):
             log(f"Load source image from {args.source}")
             source_rgb_lst = [img_rgb]
         elif is_video(args.source):
+            if args.loop:
+                # rename the function to is_drv_vid_length_larger_src_vid_length and remove `not` in if statement to make more readable
+                if not is_src_vid_length_larger_drv_vid_length(args.source, args.driving):  # TODO: add this in animal pipeline too
+                    args.source = loop_vid(args.source, args.driving)
             flag_is_source_video = True
             source_rgb_lst = load_video(args.source)
             source_rgb_lst = [resize_to_limit(img, inf_cfg.source_max_dim, inf_cfg.source_division) for img in source_rgb_lst]
