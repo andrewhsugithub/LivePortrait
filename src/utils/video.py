@@ -242,7 +242,7 @@ def is_src_vid_length_larger_drv_vid_length(src_vid_path, drv_vid_path):
 def loop_vid(vid_path, target_vid_path):
     target_duration = get_vid_duration(target_vid_path)
     
-    output_path = prefix(osp.basename(vid_path)) + "_looped.mp4"
+    output_path = vid_path[:-4] + "_looped.mp4" # TODO: need to delete after generating video
 
     cmd_loop_video = [
         "ffmpeg",
@@ -254,7 +254,7 @@ def loop_vid(vid_path, target_vid_path):
         "-y"
     ]
     try:
-        exec_cmd(exec_cmd(' '.join(cmd_loop_video)))
+        exec_cmd(' '.join(cmd_loop_video))
         log(f"Looped video saved at: {output_path}")
         return output_path
     except Exception as e:
