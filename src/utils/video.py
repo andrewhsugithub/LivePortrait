@@ -216,3 +216,47 @@ def bb_intersection_over_union(boxA, boxB):
     boxBArea = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
     iou = interArea / float(boxAArea + boxBArea - interArea)
     return iou
+
+def get_vid_duration(vid_path):
+    cmd = [
+        "ffprobe",
+        "-v", "error",
+        "-show_entries", 
+        "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        vid_path
+    ]
+    try:
+        duration = float(exec_cmd(' '.join(cmd)).stdout.strip())
+        return duration
+    except Exception as e:
+        log(f"Error occurred while getting video lengths: {e}")
+        return None
+
+def is_src_vid_length_larger_drv_vid_length(src_vid_path, drv_vid_path):
+    src_duration = get_vid_duration(src_vid_path) # get source video length
+    drv_duration = get_vid_duration(drv_vid_path) # get driving video length
+
+    return src_duration >= drv_duration
+    
+def loop_vid(vid_path, target_vid_path):
+    target_duration = get_vid_duration(target_vid_path)
+    
+    output_path = vid_path[:-4] + "_looped.mp4" # TODO: need to delete after generating video
+
+    cmd_loop_video = [
+        "ffmpeg",
+        "-stream_loop", "-1",
+        "-i", vid_path,
+        "-c", "copy",
+        "-t", str(target_duration),
+        output_path,
+        "-y"
+    ]
+    try:
+        exec_cmd(' '.join(cmd_loop_video))
+        log(f"Looped video saved at: {output_path}")
+        return output_path
+    except Exception as e:
+        log(f"Error occurred while looping the video: {e}")
+        return None

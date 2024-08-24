@@ -55,3 +55,4 @@ class ArgumentConfig(PrintableConfig):
     server_name: Optional[str] = "127.0.0.1"  # set the local server name, "0.0.0.0" to broadcast all
     flag_do_torch_compile: bool = False  # whether to use torch.compile to accelerate generation
     gradio_temp_dir: Optional[str] = None  # directory to save gradio temp files
+    loop: bool = False # whether to make output video's duration same as source video's duration
